@@ -1,0 +1,236 @@
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:thebestfoodsql/screens/followedListPage.dart';
+import 'package:thebestfoodsql/screens/followersListPage.dart';
+import 'package:thebestfoodsql/screens/loginPage.dart';
+import 'package:thebestfoodsql/utils/constants.dart';
+import 'package:thebestfoodsql/utils/tokenProvider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  var userInfo;
+  String token;
+  Future takePhoto(context) async {
+    var image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 45);
+    uploadPhoto(context, image);
+  }
+
+  Future pickCamera(context) async {
+    var image = await ImagePicker.pickImage(
+        source: ImageSource.camera, imageQuality: 45);
+    uploadPhoto(context, image);
+  }
+
+  Future uploadPhoto(BuildContext context, var image) async {
+    if (image != null) {
+      Navigator.pop(context);
+      setState(() {
+        print("Profil Resmi Yüklendi");
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('Profil resmi yüklendi')));
+      });
+    }
+  }
+
+  void choiceAction(String choice) async {
+    if (choice == "signout") {
+      try {
+        await Token.resetUserToken();
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoginPage()),
+            (Route<dynamic> route) => false);
+      } catch (e) {
+        print(e);
+      }
+    } else if (choice == "editprofile") {}
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getToken();
+  }
+
+  void getToken() async {
+    token = await Token.getToken();
+    final response = await http.get(
+      'http://bestfood.codes2.com/me',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        userInfo = json.decode(response.body);
+      });
+      print(userInfo);
+    } else {
+      throw Exception('Failed to load user info!');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          actions: <Widget>[
+            new PopupMenuButton<String>(
+              onSelected: choiceAction,
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem<String>(
+                    child: Text("Profili düzenle"),
+                    value: "editprofile",
+                  ),
+                  PopupMenuItem<String>(
+                    child: Text("Çıkış yap"),
+                    value: "signout",
+                  ),
+                ];
+              },
+            ),
+          ],
+          title: Text('Profil'),
+          centerTitle: true,
+          automaticallyImplyLeading: false),
+      body: userInfo == null
+          ? Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.blue,
+              ),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  kSizedBoxTen,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              _settingModalBottomSheet(context);
+                            },
+                            child: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  userInfo['user']['picture'].toString()),
+                              radius: 40.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      kSizedBoxTen,
+                      Text(userInfo['user']['username'],
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.w700)),
+                      kSizedBoxTen,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text('0',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(userInfo['follower_count'].toString(),
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(userInfo['following_count'].toString(),
+                                  style: TextStyle(fontWeight: FontWeight.bold))
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text('Gönderi'),
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FollowersLPage(
+                                                token: token,
+                                              )),
+                                    );
+                                  },
+                                  child: Text('Takipçi')),
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FollowedLPage(
+                                                token: token,
+                                              )),
+                                    );
+                                  },
+                                  child: Text('Takip edilen'))
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(userInfo['user']['firstname'] +
+                              " " +
+                              userInfo['user']['lastname']),
+                          Text('Ege Üniversitesi Bil Müh')
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  void _settingModalBottomSheet(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.camera),
+                    title: new Text('Fotoğraf çek'),
+                    onTap: () {
+                      pickCamera(context);
+                    }),
+                new ListTile(
+                  leading: new Icon(Icons.image),
+                  title: new Text('Galeriden seç'),
+                  onTap: () {
+                    takePhoto(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+}

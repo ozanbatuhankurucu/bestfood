@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
+import 'package:thebestfoodsql/components/functions.dart';
 import 'package:thebestfoodsql/screens/userFollowedLP.dart';
 import 'package:thebestfoodsql/screens/userFollowersLP.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
 
 class UserProfilePage extends StatefulWidget {
   final uid;
@@ -17,6 +16,7 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
+  Functions functions = new Functions();
   var user;
   @override
   void initState() {
@@ -25,52 +25,57 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   getUserProfileInfo() async {
-    final response = await http.get(
-      'http://bestfood.codes2.com/profile?id=${widget.uid}',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      setState(() {
-        user = json.decode(response.body);
-        print('userprofildeym');
-        print(user);
-      });
-    } else {
-      print(response.statusCode);
-      throw Exception('Aranan kullanıcılar getirilemedi!');
-    }
+    final response = await UserData.getProfile(widget.token, widget.uid);
+    setState(() {
+      user = response;
+      print(user);
+    });
   }
 
-  _onAlertButtonsPressed(context) {
-    Alert(
-      context: context,
-      title: "",
-      desc: "Takibi bırakmak istediğinize emin misiniz?",
-      buttons: [
-        DialogButton(
-          color: Colors.white,
-          child: Text(
-            "Vazgeç",
-            style: TextStyle(color: Color(0xFF46827F), fontSize: 12),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        DialogButton(
-          color: Colors.white,
-          child: Text(
-            "Takibi Bırak",
-            style: TextStyle(color: Color(0xFF46827F), fontSize: 12),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
-      ],
-    ).show();
+  Widget userRelationshipFollower(var relationship) {
+    Widget button;
+    if (relationship == null) {
+      button = Text('Takipçi');
+    } else {
+      if (relationship['state'] == true) {
+        button = GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserFollowersLPage(
+                        token: widget.token, uid: user['user']['id'])),
+              );
+            },
+            child: Text('Takipçi'));
+      } else {
+        button = Text('Takipçi');
+      }
+    }
+    return button;
+  }
+
+  Widget userRelationshipFollowed(var relationship) {
+    Widget button;
+    if (relationship == null) {
+      button = Text('Takip edilen');
+    } else {
+      if (relationship['state'] == true) {
+        button = GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserFollowedLPage(
+                        token: widget.token, uid: user['user']['id'])),
+              );
+            },
+            child: Text('Takip edilen'));
+      } else {
+        button = Text('Takip edilen');
+      }
+    }
+    return button;
   }
 
   @override
@@ -102,7 +107,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
-                            getCurrentButton(user['relationship']),
+                            getCurrentButton(user['relationship'], widget.token,
+                                widget.uid, context),
                           ],
                         ),
                         Row(
@@ -147,36 +153,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
                                       Text('Gönderi'),
-                                      GestureDetector(
-                                          onTap: () {
-                                            if (user['relationship']['state'] ==
-                                                true) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        UserFollowersLPage(
-                                                            token: widget.token,
-                                                            uid: user['user']['id'])),
-                                              );
-                                            }
-                                          },
-                                          child: Text('Takipçi')),
-                                      GestureDetector(
-                                          onTap: () {
-                                            if (user['relationship']['state'] ==
-                                                true) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        UserFollowedLPage(
-                                                            token: widget.token,
-                                                            uid: user['user']['id'])),
-                                              );
-                                            }
-                                          },
-                                          child: Text('Takip edilen'))
+                                      userRelationshipFollower(
+                                          user['relationship']),
+                                      userRelationshipFollowed(
+                                          user['relationship']),
                                     ],
                                   ),
                                 ],
@@ -210,33 +190,45 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
     );
   }
-}
 
-Widget getCurrentButton(var relationship) {
-  Widget button;
-  if (relationship == null) {
-    button = getButton('Takip et');
-    print(relationship);
-  } else {
-    if (relationship['state'] == true) {
+  Widget getCurrentButton(var relationship, var token, var uid, context) {
+    Widget button;
+    if (relationship == null) {
+      button = getButton('Takip et', () async {
+        final response = await UserData.getAddFollow(token, uid);
+        getUserProfileInfo();
+        print(response);
+      });
       print(relationship);
-      button = getButton('Takip ediliyor');
     } else {
-      print(relationship);
-      button = getButton('İstek gönderildi');
+      if (relationship['state'] == true) {
+        print(relationship);
+        button = getButton('Takip ediliyor', () {
+          functions.alertRemoveFollow(context, () async {
+            final responseInfo =
+                await UserData.getRemoveFollow(widget.token, widget.uid);
+            Navigator.pop(context);
+            getUserProfileInfo();
+            print(responseInfo);
+          }, token, uid);
+        });
+      } else {
+        print(relationship);
+        button = getButton('İstek gönderildi', () {});
+      }
     }
+    return button;
   }
-  return button;
-}
 
-Widget getButton(String buttonText) {
-  return FlatButton(
-      color: Colors.red,
-      onPressed: () {},
-      child: Text(
-        buttonText,
-        style: TextStyle(color: Colors.white),
-      ),
-      shape: new RoundedRectangleBorder(
-          borderRadius: new BorderRadius.circular(30.0)));
+  Widget getButton(String buttonText, Function function) {
+    return FlatButton(
+        color: Colors.red,
+        onPressed: function,
+        child: Text(
+          buttonText,
+          style: TextStyle(color: Colors.white),
+        ),
+        shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30.0)));
+  }
 }

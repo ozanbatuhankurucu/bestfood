@@ -15,11 +15,10 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   void initState() {
-    // TODO: implement initState
-
     getToken();
   }
 
+  //token gosterme amacli oylesine koyulmus bir metot
   getToken() async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'token';
@@ -71,7 +70,7 @@ class _MainPageState extends State<MainPage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                FontAwesomeIcons.heart,
+                FontAwesomeIcons.heartbeat,
               ),
               title: Text(""),
             ),

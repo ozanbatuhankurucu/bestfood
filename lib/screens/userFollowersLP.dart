@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:thebestfoodsql/screens/userProfilePage.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-//TODO pagination yapilacak
 class UserFollowersLPage extends StatefulWidget {
   final token;
   final uid;
@@ -13,48 +12,59 @@ class UserFollowersLPage extends StatefulWidget {
 }
 
 class _UserFollowersLPageState extends State<UserFollowersLPage> {
+  bool circularProgressControl = false;
+  ScrollController _scrollController = ScrollController();
+  int paginationCount = 0;
   var followers;
   var userMe;
   void getFollowers() async {
-    final response = await http.get(
-      'http://bestfood.codes2.com/get_follower?id=${widget.uid}',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
+    final response = await UserData.getFollower(widget.token, widget.uid);
+    setState(() {
+      followers = response;
+    });
+  }
 
-    if (response.statusCode == 200) {
-      setState(() {
-        followers = json.decode(response.body);
-      });
-      print('takipciler bos geliyor knk');
-      print(followers);
-    } else {
-      throw Exception('Takipçileri çekerken bir hata meydana geldi!');
-    }
-    final responseMe = await http.get(
-      'http://bestfood.codes2.com/me',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-    if (responseMe.statusCode == 200) {
-      setState(() {
-        userMe = json.decode(responseMe.body);
-      });
+  void getMe() async {
+    final response = await UserData.getMe(widget.token);
+    setState(() {
+      userMe = response;
       print(userMe);
-    } else {
-      throw Exception('Failed to load user info!');
-    }
+    });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getFollowers();
+    getMe();
+    _scrollController.addListener(bringNewUserFollowers);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void bringNewUserFollowers() async {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      setState(() {
+        circularProgressControl = true;
+      });
+      paginationCount++;
+      print(paginationCount);
+      final response = await UserData.getFollowerPage(
+          widget.token, widget.uid, paginationCount);
+      var cameFollowers = response;
+      setState(() {
+        circularProgressControl = false;
+        for (var user in cameFollowers) {
+          followers.add(user);
+        }
+      });
+    }
   }
 
   @override
@@ -63,43 +73,57 @@ class _UserFollowersLPageState extends State<UserFollowersLPage> {
       appBar: AppBar(
         title: Text('Takipçiler'),
       ),
-      body: followers == null
+      body: followers == null || userMe == null
           ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.blue,
+              child: SpinKitCircle(
+                color: Colors.blue,
+                size: 50.0,
               ),
             )
-          : ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  onTap: () {
-                    if (followers[index]['id'] != userMe['user']['id']) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => UserProfilePage(
-                                  uid: followers[index]['id'],
-                                  token: widget.token,
-                                )),
+          : Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: () {
+                          if (followers[index]['id'] != userMe['user']['id']) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UserProfilePage(
+                                        uid: followers[index]['id'],
+                                        token: widget.token,
+                                      )),
+                            );
+                          }
+                        },
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            followers[index]['picture'],
+                          ),
+                          radius: 20.0,
+                        ),
+                        title: Text(
+                          followers[index]['username'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(followers[index]['firstname'] +
+                            " " +
+                            followers[index]['lastname']),
                       );
-                    }
-                  },
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      followers[index]['picture'],
-                    ),
-                    radius: 20.0,
+                    },
+                    itemCount: followers.length,
                   ),
-                  title: Text(
-                    followers[index]['username'],
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(followers[index]['firstname'] +
-                      " " +
-                      followers[index]['lastname']),
-                );
-              },
-              itemCount: followers.length,
+                ),
+                circularProgressControl == false
+                    ? Container()
+                    : SpinKitCircle(
+                        color: Colors.blue,
+                        size: 50.0,
+                      ),
+              ],
             ),
     );
   }

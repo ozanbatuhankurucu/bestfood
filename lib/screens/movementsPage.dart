@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:thebestfoodsql/screens/followRequestPage.dart';
+import 'package:thebestfoodsql/utils/tokenProvider.dart';
 
 class MovementsPage extends StatefulWidget {
   @override
@@ -76,7 +78,18 @@ class FollowMovements extends StatefulWidget {
 }
 
 class _FollowMovementsState extends State<FollowMovements> {
-  String uid;
+  String token;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getToken();
+  }
+
+  void getToken() async {
+    token = await Token.getToken();
+    print(token);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +98,15 @@ class _FollowMovementsState extends State<FollowMovements> {
         Padding(
           padding: const EdgeInsets.only(left: 16.0, top: 16.0),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FRequestPage(
+                          token: token,
+                        )),
+              );
+            },
             child: Row(
               children: <Widget>[
                 Padding(

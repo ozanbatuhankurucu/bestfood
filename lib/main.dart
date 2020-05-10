@@ -27,16 +27,14 @@ class _PageRouterState extends State<PageRouter> {
     String token = await Token.getToken();
     if (token == null) {
       print(token);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false);
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getT();
   }

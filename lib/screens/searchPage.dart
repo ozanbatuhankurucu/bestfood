@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:thebestfoodsql/screens/userProfilePage.dart';
 import 'package:thebestfoodsql/utils/tokenProvider.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -17,32 +16,17 @@ class _SearchPageState extends State<SearchPage> {
   int paginationCount = 0;
   String value;
   String token;
-  List searchedUsers;
+  var searchedUsers;
   String errorMessage;
   Future<void> getSearchedUsers() async {
-    print(value);
-    final response = await http.get(
-      'http://bestfood.codes2.com/search?value=$value',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer $token'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      setState(() {
-        errorMessage = null;
-        searchedUsers = json.decode(response.body);
-        if (searchedUsers.length == 0) {
-          errorMessage = 'Böyle bir kullanıcı sistemde bulunmamaktadır';
-        }
-      });
-
-      print(searchedUsers);
-    } else {
-      print(response.statusCode);
-      throw Exception('Aranan kullanıcılar getirilemedi!');
-    }
+    final response = await UserData.getSearchValue(value, token);
+    setState(() {
+      errorMessage = null;
+      searchedUsers = response;
+      if (searchedUsers.length == 0) {
+        errorMessage = 'Böyle bir kullanıcı sistemde bulunmamaktadır';
+      }
+    });
   }
 
   @override
@@ -50,47 +34,35 @@ class _SearchPageState extends State<SearchPage> {
     // TODO: implement initState
     super.initState();
     getToken();
-    _scrollController.addListener(() async {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {
-          circularProgressControl = true;
-        });
-        paginationCount++;
-        print(paginationCount);
-        final response = await http.get(
-          'http://bestfood.codes2.com/search?value=$value&page=$paginationCount',
-          headers: <String, String>{
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Bearer $token'
-          },
-        );
-
-        if (response.statusCode == 200) {
-          setState(() {
-            var cameUsers = json.decode(response.body);
-            print(cameUsers.length);
-            circularProgressControl = false;
-
-            print(cameUsers);
-            for (var user in cameUsers) {
-              searchedUsers.add(user);
-            }
-          });
-        } else {
-          print(response.statusCode);
-          throw Exception('Aranan kullanıcılar getirilemedi!');
-        }
-      }
-    });
+    _scrollController.addListener(bringNewUsers);
   }
-
-  @override
+@override
   void dispose() {
     // TODO: implement dispose
     _scrollController.dispose();
     super.dispose();
   }
+  void bringNewUsers() async {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      setState(() {
+        circularProgressControl = true;
+      });
+      paginationCount++;
+      print(paginationCount);
+      final response =
+          await UserData.getSearchValuePage(value, token, paginationCount);
+      var cameUsers = response;
+      setState(() {
+        circularProgressControl = false;
+        for (var user in cameUsers) {
+          searchedUsers.add(user);
+        }
+      });
+    }
+  }
+
+  
 
   void getToken() async {
     token = await Token.getToken();
@@ -124,9 +96,9 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.search),
-                  onPressed: () async {
+                  onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      await getSearchedUsers();
+                      getSearchedUsers();
                       setState(() {
                         paginationCount = 0;
                       });

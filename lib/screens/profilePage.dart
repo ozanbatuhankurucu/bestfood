@@ -5,8 +5,8 @@ import 'package:thebestfoodsql/screens/followersListPage.dart';
 import 'package:thebestfoodsql/screens/loginPage.dart';
 import 'package:thebestfoodsql/utils/constants.dart';
 import 'package:thebestfoodsql/utils/tokenProvider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -30,6 +30,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future uploadPhoto(BuildContext context, var image) async {
     if (image != null) {
+      final response = await UserData.uploadProfileImage(token, image);
+      print(response);
+      getToken();
       Navigator.pop(context);
       setState(() {
         print("Profil Resmi Yüklendi");
@@ -61,22 +64,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void getToken() async {
     token = await Token.getToken();
-    final response = await http.get(
-      'http://bestfood.codes2.com/me',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer $token'
-      },
-    );
+    getMe(token);
+  }
 
-    if (response.statusCode == 200) {
-      setState(() {
-        userInfo = json.decode(response.body);
-      });
+  void getMe(String token) async {
+    final response = await UserData.getMe(token);
+    setState(() {
+      userInfo = response;
       print(userInfo);
-    } else {
-      throw Exception('Failed to load user info!');
-    }
+    });
   }
 
   @override
@@ -104,10 +100,9 @@ class _ProfilePageState extends State<ProfilePage> {
           centerTitle: true,
           automaticallyImplyLeading: false),
       body: userInfo == null
-          ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.blue,
-              ),
+          ? SpinKitCircle(
+              color: Colors.blue,
+              size: 50.0,
             )
           : SingleChildScrollView(
               child: Column(
@@ -161,25 +156,31 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: <Widget>[
                               Text('Gönderi'),
                               GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    bool result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => FollowersLPage(
                                                 token: token,
                                               )),
                                     );
+                                    if (result) {
+                                      getToken();
+                                    }
                                   },
                                   child: Text('Takipçi')),
                               GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    bool result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => FollowedLPage(
                                                 token: token,
                                               )),
                                     );
+                                    if (result) {
+                                      getToken();
+                                    }
                                   },
                                   child: Text('Takip edilen'))
                             ],

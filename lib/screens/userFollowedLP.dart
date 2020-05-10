@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:thebestfoodsql/screens/userProfilePage.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
 
-//TODO pagination yapilacak
 class UserFollowedLPage extends StatefulWidget {
   final token;
   final uid;
@@ -14,49 +12,59 @@ class UserFollowedLPage extends StatefulWidget {
 }
 
 class _UserFollowedLPageState extends State<UserFollowedLPage> {
+  bool circularProgressControl = false;
+  ScrollController _scrollController = ScrollController();
+  int paginationCount = 0;
   var followeds;
   var userMe;
   void getFolloweds() async {
-    print(widget.uid);
-    final response = await http.get(
-      'http://bestfood.codes2.com/get_following?id=${widget.uid}',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      setState(() {
-        followeds = json.decode(response.body);
-      });
+    final response = await UserData.getFollowing(widget.token, widget.uid);
+    setState(() {
+      followeds = response;
       print(followeds);
-    } else {
-      throw Exception('Takip edilenleri çekerken bir hata meydana geldi!');
-    }
+    });
+  }
 
-    final responseMe = await http.get(
-      'http://bestfood.codes2.com/me',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-    if (responseMe.statusCode == 200) {
-      setState(() {
-        userMe = json.decode(responseMe.body);
-      });
-      
-    } else {
-      throw Exception('Failed to load user info!');
-    }
+  void getMe() async {
+    final response = await UserData.getMe(widget.token);
+    setState(() {
+      userMe = response;
+      print(userMe);
+    });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    getMe();
     getFolloweds();
+    _scrollController.addListener(bringNewUserFollowings);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void bringNewUserFollowings() async {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      setState(() {
+        circularProgressControl = true;
+      });
+      paginationCount++;
+      print(paginationCount);
+      final response = await UserData.getFollowingPage(
+          widget.token, widget.uid, paginationCount);
+      var cameFollowings = response;
+      setState(() {
+        circularProgressControl = false;
+        for (var user in cameFollowings) {
+          followeds.add(user);
+        }
+      });
+    }
   }
 
   @override
@@ -65,40 +73,54 @@ class _UserFollowedLPageState extends State<UserFollowedLPage> {
       appBar: AppBar(
         title: Text('Takip edilenler'),
       ),
-      body: followeds == null
+      body: followeds == null || userMe == null
           ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.blue,
+              child: SpinKitCircle(
+                color: Colors.blue,
+                size: 50.0,
               ),
             )
-          : ListView.builder(
-              itemCount: followeds.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  onTap: () {
-                    if (followeds[index]['id'] != userMe['id']) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => UserProfilePage(
-                                  uid: followeds[index]['id'],
-                                  token: widget.token,
-                                )),
+          : Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: followeds.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: () {
+                          if (followeds[index]['id'] != userMe['user']['id']) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UserProfilePage(
+                                        uid: followeds[index]['id'],
+                                        token: widget.token,
+                                      )),
+                            );
+                          }
+                        },
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            followeds[index]['picture'],
+                          ),
+                          radius: 25.0,
+                        ),
+                        title: Text(followeds[index]['username']),
+                        subtitle: Text(followeds[index]['firstname'] +
+                            " " +
+                            followeds[index]['lastname']),
                       );
-                    }
-                  },
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      followeds[index]['picture'],
-                    ),
-                    radius: 25.0,
+                    },
                   ),
-                  title: Text(followeds[index]['username']),
-                  subtitle: Text(followeds[index]['firstname'] +
-                      " " +
-                      followeds[index]['lastname']),
-                );
-              },
+                ),
+                circularProgressControl == false
+                    ? Container()
+                    : SpinKitCircle(
+                        color: Colors.blue,
+                        size: 50.0,
+                      ),
+              ],
             ),
     );
   }

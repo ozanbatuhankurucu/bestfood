@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:thebestfoodsql/screens/userProfilePage.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
 
-//TODO pagination yapilacak
 class FollowersLPage extends StatefulWidget {
   final token;
   FollowersLPage({this.token});
@@ -13,31 +11,48 @@ class FollowersLPage extends StatefulWidget {
 }
 
 class _FollowersLPageState extends State<FollowersLPage> {
+  bool circularProgressControl = false;
+  ScrollController _scrollController = ScrollController();
+  int paginationCount = 0;
   var followers;
   void getFollowers() async {
-    final response = await http.get(
-      'http://bestfood.codes2.com/get_follower',
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ${widget.token}'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      setState(() {
-        followers = json.decode(response.body);
-      });
-      print(followers);
-    } else {
-      throw Exception('Takipçileri çekerken bir hata meydana geldi!');
-    }
+    final response = await UserData.getFollowersMe(widget.token);
+    setState(() {
+      followers = response;
+    });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getFollowers();
+    _scrollController.addListener(bringNewFollowers);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void bringNewFollowers() async {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      setState(() {
+        circularProgressControl = true;
+      });
+      paginationCount++;
+      print(paginationCount);
+      final response =
+          await UserData.getFollowersMePage(widget.token, paginationCount);
+      var cameFollowers = response;
+      setState(() {
+        circularProgressControl = false;
+        for (var user in cameFollowers) {
+          followers.add(user);
+        }
+      });
+    }
   }
 
   @override
@@ -45,6 +60,11 @@ class _FollowersLPageState extends State<FollowersLPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Takipçiler'),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context, true);
+            }),
       ),
       body: followers == null
           ? Center(
@@ -52,40 +72,58 @@ class _FollowersLPageState extends State<FollowersLPage> {
                 backgroundColor: Colors.blue,
               ),
             )
-          : ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => UserProfilePage(
-                                uid: followers[index]['id'],
-                                token: widget.token,
-                              )),
-                    );
-                  },
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      followers[index]['picture'],
-                    ),
-                    radius: 20.0,
+          : Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserProfilePage(
+                                      uid: followers[index]['id'],
+                                      token: widget.token,
+                                    )),
+                          );
+                        },
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            followers[index]['picture'],
+                          ),
+                          radius: 20.0,
+                        ),
+                        trailing: FlatButton(
+                          onPressed: () async {
+                            final response = await UserData.getRemoveFollow(
+                                widget.token, followers[index]['id']);
+                            print(response);
+                            getFollowers();
+                          },
+                          child: Text('Çıkar'),
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          followers[index]['username'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(followers[index]['firstname'] +
+                            " " +
+                            followers[index]['lastname']),
+                      );
+                    },
+                    itemCount: followers.length,
                   ),
-                  trailing: FlatButton(
-                    onPressed: () {},
-                    child: Text('Çıkar'),
-                    color: Colors.white,
-                  ),
-                  title: Text(
-                    followers[index]['username'],
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(followers[index]['firstname'] +
-                      " " +
-                      followers[index]['lastname']),
-                );
-              },
-              itemCount: followers.length,
+                ),
+                circularProgressControl == false
+                    ? Container()
+                    : SpinKitCircle(
+                        color: Colors.blue,
+                        size: 50.0,
+                      ),
+              ],
             ),
     );
   }

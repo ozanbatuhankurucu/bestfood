@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thebestfoodsql/utils/userData.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
+//TODO 20 şer gelecek requestler
 class FRequestPage extends StatefulWidget {
   final String token;
   FRequestPage({this.token});
@@ -72,6 +72,7 @@ class _FRequestPageState extends State<FRequestPage> {
             )
           : Column(
               children: <Widget>[
+                SizedBox(height:200),
                 Expanded(
                   child: ListView.builder(
                     controller: _scrollController,

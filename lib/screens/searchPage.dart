@@ -20,6 +20,7 @@ class _SearchPageState extends State<SearchPage> {
   String errorMessage;
   Future<void> getSearchedUsers() async {
     final response = await UserData.getSearchValue(value, token);
+    print(response);
     setState(() {
       errorMessage = null;
       searchedUsers = response;

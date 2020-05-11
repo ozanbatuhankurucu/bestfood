@@ -32,14 +32,12 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getToken();
     _scrollController.addListener(bringNewUsers);
   }
 @override
   void dispose() {
-    // TODO: implement dispose
     _scrollController.dispose();
     super.dispose();
   }

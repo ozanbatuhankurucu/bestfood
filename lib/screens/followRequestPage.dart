@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thebestfoodsql/utils/userData.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-//TODO 20 şer gelecek requestler
+
 class FRequestPage extends StatefulWidget {
   final String token;
   FRequestPage({this.token});
@@ -13,7 +13,6 @@ class _FRequestPageState extends State<FRequestPage> {
   int paginationCount = 0;
   ScrollController _scrollController = ScrollController();
   bool circularProgressControl = false;
-
   var fRequests;
   @override
   void initState() {
@@ -36,8 +35,8 @@ class _FRequestPageState extends State<FRequestPage> {
       });
       paginationCount++;
       print(paginationCount);
-      final response =
-          await UserData.getFollowRequestListPage(widget.token,paginationCount);
+      final response = await UserData.getFollowRequestListPage(
+          widget.token, paginationCount);
       var cameRequests = response;
       setState(() {
         circularProgressControl = false;
@@ -64,6 +63,11 @@ class _FRequestPageState extends State<FRequestPage> {
           'Takip istekleri',
           style: TextStyle(fontSize: 16.0),
         ),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context, true);
+            }),
       ),
       body: fRequests == null
           ? SpinKitCircle(
@@ -72,7 +76,6 @@ class _FRequestPageState extends State<FRequestPage> {
             )
           : Column(
               children: <Widget>[
-                SizedBox(height:200),
                 Expanded(
                   child: ListView.builder(
                     controller: _scrollController,
@@ -108,12 +111,12 @@ class _FRequestPageState extends State<FRequestPage> {
                                 children: <Widget>[
                                   GestureDetector(
                                     onTap: () async {
-                                      final response =
+                                      final responseAccept =
                                           await UserData.getAcceptFollow(
                                               widget.token,
                                               fRequests[index]['id']);
                                       getFRequests();
-                                      print(response);
+                                      print(responseAccept);
                                     },
                                     child: Container(
                                       padding: EdgeInsets.all(8.0),

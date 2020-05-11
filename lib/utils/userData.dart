@@ -230,6 +230,24 @@ class UserData {
       throw Exception('Aranan kullanıcılar getirilemedi!');
     }
   }
+  // get follow_request_count
+  static Future getFollowRequestCount(var token) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/follow_request_count',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Takip istek sayısı getirilemedi!');
+    }
+  }
+
 
   //get follow_request_list
   static Future getFollowRequestList(var token) async {

@@ -31,11 +31,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Future uploadPhoto(BuildContext context, var image) async {
     if (image != null) {
       final response = await UserData.uploadProfileImage(token, image);
-      print(response);
-      getToken();
       Navigator.pop(context);
+      print(response.statusCode);
+      getToken();
       setState(() {
-        print("Profil Resmi Yüklendi");
+        // print("Profil Resmi Yüklendi");
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Profil resmi yüklendi')));
       });

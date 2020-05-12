@@ -8,6 +8,7 @@ import 'package:thebestfoodsql/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:thebestfoodsql/utils/tokenProvider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -22,6 +23,9 @@ class _LoginPageState extends State<LoginPage> {
   String password;
   String errorMessage = "";
   Future<void> fetchLogin() async {
+    setState(() {
+      loading = true;
+    });
     final http.Response response = await http.post(
       'http://bestfood.codes2.com/token',
       headers: <String, String>{
@@ -57,86 +61,90 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: loading == true
           ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.red,
-              ),
-            )
+              child: SpinKitCircle(
+              color: Colors.blue,
+              size: 50.0,
+            ))
           : Form(
               key: _formKey,
-              child: Padding(
-                padding:
-                    const EdgeInsets.only(top: 64.0, left: 16.0, right: 16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      TFField(
-                        onChangedFunction: (value) {
-                          userName = value;
-                        },
-                        iconData: FontAwesomeIcons.user,
-                        labelText: 'Kullanıcı adı',
-                        function: (value) {
-                          if (value.isEmpty) {
-                            return 'Lütfen kullanıcı adınızı giriniz!';
-                          }
-                          return null;
-                        },
-                      ),
-                      kSizedBoxTwenty,
-                      TFField(
-                        onChangedFunction: (value) {
-                          password = value;
-                        },
-                        iconData: FontAwesomeIcons.lock,
-                        labelText: 'Şifre',
-                        function: (value) {
-                          if (value.isEmpty) {
-                            return 'Lütfen şifrenizi giriniz!';
-                          }
-                          return null;
-                        },
-                      ),
-                      kSizedBoxTwenty,
-                      Text(
-                        errorMessage,
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      kSizedBoxTwenty,
-                      RButton(
-                        buttonText: 'Giriş yap',
-                        function: () async {
-                          if (_formKey.currentState.validate()) {
-                            await fetchLogin();
-                          }
-                        },
-                      ),
-                      SizedBox(height: 20.0),
-                      Text(
-                        'Şifremi unuttum?',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      kSizedBoxTen,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              child: Center(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  children: <Widget>[
+                    Center(
+                      child: Column(
                         children: <Widget>[
-                          Text("Hesabınız yok mu?"),
-                          SizedBox(width: 10.0),
-                          FlatButton(
-                              onPressed: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (context) => RegisterPage()),
-                                    (Route<dynamic> route) => false);
-                              },
-                              child: Text('Kayıt ol',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold))),
+                          TFField(
+                            onChangedFunction: (value) {
+                              userName = value;
+                            },
+                            iconData: FontAwesomeIcons.user,
+                            labelText: 'Kullanıcı adı',
+                            function: (value) {
+                              if (value.isEmpty) {
+                                return 'Lütfen kullanıcı adınızı giriniz!';
+                              }
+                              return null;
+                            },
+                          ),
+                          kSizedBoxTwenty,
+                          TFField(
+                            onChangedFunction: (value) {
+                              password = value;
+                            },
+                            iconData: FontAwesomeIcons.lock,
+                            labelText: 'Şifre',
+                            function: (value) {
+                              if (value.isEmpty) {
+                                return 'Lütfen şifrenizi giriniz!';
+                              }
+                              return null;
+                            },
+                          ),
+                          kSizedBoxTwenty,
+                          Text(
+                            errorMessage,
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          kSizedBoxTwenty,
+                          RButton(
+                            buttonText: 'Giriş yap',
+                            function: () async {
+                              if (_formKey.currentState.validate()) {
+                                await fetchLogin();
+                              }
+                            },
+                          ),
+                          SizedBox(height: 20.0),
+                          Text(
+                            'Şifremi unuttum?',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          kSizedBoxTen,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text("Hesabınız yok mu?"),
+                              SizedBox(width: 10.0),
+                              FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                RegisterPage()),
+                                        (Route<dynamic> route) => false);
+                                  },
+                                  child: Text('Kayıt ol',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold))),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

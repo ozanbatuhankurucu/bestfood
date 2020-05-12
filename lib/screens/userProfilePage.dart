@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:thebestfoodsql/components/functions.dart';
 import 'package:thebestfoodsql/screens/userFollowedLP.dart';
 import 'package:thebestfoodsql/screens/userFollowersLP.dart';
@@ -206,7 +205,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         button = getButton('Takip ediliyor', () {
           functions.alertRemoveFollow(context, () async {
             final responseInfo =
-                await UserData.getRemoveFollow(widget.token, widget.uid);
+                await UserData.getRemoveFollow(token,uid);
             Navigator.pop(context);
             getUserProfileInfo();
             print(responseInfo);

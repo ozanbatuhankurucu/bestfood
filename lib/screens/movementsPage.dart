@@ -147,7 +147,8 @@ class _FollowMovementsState extends State<FollowMovements> {
                                   child: CircleAvatar(
                                     backgroundColor: Colors.red,
                                     child: Text(
-                                      requestCount['request_count'].toString(),
+                                      requestCount['request_count']
+                                          .toString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -174,4 +175,6 @@ class _FollowMovementsState extends State<FollowMovements> {
       ],
     );
   }
+
+  
 }

@@ -71,10 +71,11 @@ class _FollowedLPageState extends State<FollowedLPage> {
       ),
       body: followeds == null
           ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.blue,
+            child: SpinKitCircle(
+                color: Colors.blue,
+                size: 50.0,
               ),
-            )
+          )
           : Column(
               children: <Widget>[
                 Expanded(

@@ -68,10 +68,10 @@ class _FollowersLPageState extends State<FollowersLPage> {
       ),
       body: followers == null
           ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.blue,
-              ),
-            )
+              child: SpinKitCircle(
+              color: Colors.blue,
+              size: 50.0,
+            ))
           : Column(
               children: <Widget>[
                 Expanded(

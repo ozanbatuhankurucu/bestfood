@@ -230,6 +230,7 @@ class UserData {
       throw Exception('Aranan kullanıcılar getirilemedi!');
     }
   }
+
   // get follow_request_count
   static Future getFollowRequestCount(var token) async {
     final response = await http.get(
@@ -247,7 +248,6 @@ class UserData {
       throw Exception('Takip istek sayısı getirilemedi!');
     }
   }
-
 
   //get follow_request_list
   static Future getFollowRequestList(var token) async {
@@ -331,6 +331,8 @@ class UserData {
     request.files.add(multipartFile);
     request.headers.addAll(headers);
     var response = await request.send();
-    print(response.statusCode);
+    if (response.statusCode == 200) {
+      return response;
+    }
   }
 }

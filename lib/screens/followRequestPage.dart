@@ -109,23 +109,34 @@ class _FRequestPageState extends State<FRequestPage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () async {
-                                      final responseAccept =
-                                          await UserData.getAcceptFollow(
-                                              widget.token,
-                                              fRequests[index]['id']);
-                                      getFRequests();
-                                      print(responseAccept);
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(8.0),
-                                      color: Colors.red,
-                                      child: Text('Onayla',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                  ),
+                                  fRequests[index]['status'] == null
+                                      ? GestureDetector(
+                                          onTap: () async {
+                                            final responseAccept =
+                                                await UserData.getAcceptFollow(
+                                                    widget.token,
+                                                    fRequests[index]['id']);
+                                            final user =
+                                                await UserData.getProfile(
+                                                    widget.token,
+                                                    fRequests[index]['id']);
+                                            var yeniMap = user['user'];
+                                            yeniMap['status'] = user['status'];
+                                            fRequests[index] = yeniMap;
+                                            print(user);
+                                            print(fRequests[index]);
+                                            setState(() {});
+                                            print(responseAccept);
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(8.0),
+                                            color: Colors.red,
+                                            child: Text('Onayla',
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ),
+                                        )
+                                      : Text('Takip et'),
                                   SizedBox(width: 10.0),
                                   GestureDetector(
                                     onTap: () async {

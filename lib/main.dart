@@ -3,6 +3,7 @@ import 'package:thebestfoodsql/screens/loginPage.dart';
 import 'package:thebestfoodsql/screens/mainPage.dart';
 import 'package:thebestfoodsql/utils/tokenProvider.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,35 +13,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool internetControl;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _checkInternetConnectivity();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(primaryColor: Colors.red),
       debugShowCheckedModeBanner: false,
       title: 'The Best Food',
-      home: internetControl == false ? InternetConnectionPage() : PageRouter(),
+      home: PageRouter(),
     );
-  }
-
-  _checkInternetConnectivity() async {
-    var result = await Connectivity().checkConnectivity();
-    if (result == ConnectivityResult.none) {
-      setState(() {
-        internetControl = false;
-      });
-    } else {
-      setState(() {
-        internetControl = true;
-      });
-    }
   }
 }
 
@@ -50,13 +30,26 @@ class PageRouter extends StatefulWidget {
 }
 
 class _PageRouterState extends State<PageRouter> {
+  bool internetControl;
   void getT() async {
-    String token = await Token.getToken();
-    if (token == null) {
-      print(token);
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.none) {
+      print('internet yok');
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => InternetConnectionPage()),
           (Route<dynamic> route) => false);
+    } else {
+      String token = await Token.getToken();
+      if (token == null) {
+        print(token);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoginPage()),
+            (Route<dynamic> route) => false);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => MainPage()),
+            (Route<dynamic> route) => false);
+      }
     }
   }
 
@@ -68,7 +61,14 @@ class _PageRouterState extends State<PageRouter> {
 
   @override
   Widget build(BuildContext context) {
-    return MainPage();
+    return Scaffold(
+      body: Center(
+        child: SpinKitCircle(
+          color: Colors.blue,
+          size: 50.0,
+        ),
+      ),
+    );
   }
 }
 

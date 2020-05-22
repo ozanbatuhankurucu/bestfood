@@ -14,7 +14,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  
   var userInfo;
   String token;
   Future takePhoto(context) async {
@@ -102,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
           ],
-          title: Text('Profil'),
+          title: userInfo==null ? Container() : Text(userInfo['user']['username']),
           centerTitle: true,
           automaticallyImplyLeading: false),
       body: userInfo == null
@@ -127,18 +126,13 @@ class _ProfilePageState extends State<ProfilePage> {
                               _settingModalBottomSheet(context);
                             },
                             child: CircleAvatar(
-                              backgroundImage: NetworkImage(userInfo['user']['picture']),
+                              backgroundImage:
+                                  NetworkImage(userInfo['user']['picture']),
                               radius: 40.0,
                             ),
                           ),
                         ],
                       ),
-                      kSizedBoxTen,
-                      Text(userInfo['user']['username'],
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.w700)),
                       kSizedBoxTen,
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +189,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10.0,),
+                  SizedBox(
+                    height: 10.0,
+                  ),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

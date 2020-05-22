@@ -83,6 +83,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
       appBar: AppBar(
         title: user == null ? Container() : Text(user['user']['username']),
         centerTitle: true,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context, true);
+            }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -204,8 +209,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         print(relationship);
         button = getButton('Takip ediliyor', () {
           functions.alertRemoveFollow(context, () async {
-            final responseInfo =
-                await UserData.getRemoveFollow(token,uid);
+            final responseInfo = await UserData.getRemoveFollowing(token, uid);
             Navigator.pop(context);
             getUserProfileInfo();
             print(responseInfo);

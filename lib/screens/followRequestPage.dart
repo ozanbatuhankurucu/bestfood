@@ -88,8 +88,8 @@ class _FRequestPageState extends State<FRequestPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 4.0),
                         child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            bool result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => UserProfilePage(
@@ -97,6 +97,9 @@ class _FRequestPageState extends State<FRequestPage> {
                                         uid: fRequests[index]['id'],
                                       )),
                             );
+                            if (result) {
+                              getFRequests();
+                            }
                           },
                           child: Row(
                             children: <Widget>[
@@ -228,7 +231,7 @@ class _FRequestPageState extends State<FRequestPage> {
         button = getButton('Takip ediliyor', () {
           functions.alertRemoveFollow(context, () async {
             //TODOburada yukarıdaki gibi status kontrolü yapılacak şuan api calismadigi için dümenden yaptm
-            final response = await UserData.getRemoveFollow(token, uid);
+            final response = await UserData.getRemoveFollowing(token, uid);
             Navigator.pop(context);
             fRequests[index]['relationship'] = null;
             print(response);

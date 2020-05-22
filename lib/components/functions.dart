@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Functions {
-   _onAlertButtonsPressed(context, Function function, var token, var uid) {
+   _onAlertButtonsPressed(context, Function function) {
     return Alert(
       context: context,
       title: "",
@@ -27,7 +27,7 @@ class Functions {
       ],
     ).show();
   }
-   void alertRemoveFollow(context,Function function,var token,var uid){
-    _onAlertButtonsPressed(context, function, token, uid);
+   void alertRemoveFollow(context,Function function){
+    _onAlertButtonsPressed(context, function);
   }
 }

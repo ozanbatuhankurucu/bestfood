@@ -18,37 +18,7 @@ class _PostPageState extends State<PostPage> {
       appBar: AppBar(
         title: Text('The Best Food'),
         automaticallyImplyLeading: false,
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, right: 8.0),
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(top: 12.0, right: 8.0),
-                  child: GestureDetector(
-                    child: Icon(FontAwesomeIcons.inbox),
-                    onTap: () {
-                      /*   Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MessagesBoxPage()),
-                      ); */
-                    },
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 12.0, bottom: 8.0),
-                  child: CircleAvatar(
-                      radius: 10.0,
-                      backgroundColor: Colors.green,
-                      child: Text('5',
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 12.0))),
-                ),
-              ],
-            ),
-          ),
-        ],
+        actions: <Widget>[],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -58,6 +28,7 @@ class _PostPageState extends State<PostPage> {
           ); */
         },
         child: Image.asset('images/fork.png'),
+        backgroundColor: Colors.red,
       ),
       body: Container(),
     );

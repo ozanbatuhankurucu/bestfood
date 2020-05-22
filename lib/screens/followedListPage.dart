@@ -71,11 +71,11 @@ class _FollowedLPageState extends State<FollowedLPage> {
       ),
       body: followeds == null
           ? Center(
-            child: SpinKitCircle(
+              child: SpinKitCircle(
                 color: Colors.blue,
                 size: 50.0,
               ),
-          )
+            )
           : Column(
               children: <Widget>[
                 Expanded(
@@ -103,12 +103,13 @@ class _FollowedLPageState extends State<FollowedLPage> {
                         trailing: FlatButton(
                           onPressed: () {
                             functions.alertRemoveFollow(context, () async {
-                              final response = await UserData.getRemoveFollow(
-                                  widget.token, followeds[index]['id']);
+                              final response =
+                                  await UserData.getRemoveFollowing(
+                                      widget.token, followeds[index]['id']);
                               Navigator.pop(context);
                               getFolloweds();
                               print(response);
-                            }, widget.token, followeds[index]['id']);
+                            },);
                           },
                           child: Text('Takibi Bırak'),
                           color: Colors.white,

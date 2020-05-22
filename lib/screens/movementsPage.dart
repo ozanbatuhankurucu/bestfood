@@ -136,7 +136,7 @@ class _FollowMovementsState extends State<FollowMovements> {
                               children: <Widget>[
                                 Container(
                                   child: CircleAvatar(
-                                    backgroundColor: Colors.blue,
+                                    backgroundImage: NetworkImage(requestCount['image']),
                                     radius: 20.0,
                                   ),
                                 ),

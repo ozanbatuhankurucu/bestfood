@@ -298,7 +298,23 @@ class UserData {
       return json.decode(response.body);
     } else {
       print(response.statusCode);
-      throw Exception('Takipten çıkılamadı veya takip isteği silinemedi!');
+      throw Exception('Takipçi çıkarılamadı');
+    }
+  }
+  // get remove_following
+  static Future getRemoveFollowing(var token, var uid) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/remove_following?id=$uid',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Takipten çıkılamadı');
     }
   }
 

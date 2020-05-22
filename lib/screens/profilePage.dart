@@ -14,6 +14,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  
   var userInfo;
   String token;
   Future takePhoto(context) async {
@@ -28,14 +29,15 @@ class _ProfilePageState extends State<ProfilePage> {
     uploadPhoto(context, image);
   }
 
-  Future uploadPhoto(BuildContext context, var image) async {
+  Future<void> uploadPhoto(BuildContext context, var image) async {
     if (image != null) {
       final response = await UserData.uploadProfileImage(token, image);
-      Navigator.pop(context);
       print(response.statusCode);
+      Navigator.pop(context);
       getToken();
+      print(userInfo['user']['picture']);
       setState(() {
-        // print("Profil Resmi Yüklendi");
+        print("Profil Resmi Yüklendi");
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Profil resmi yüklendi')));
       });
@@ -60,6 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
     // TODO: implement initState
     super.initState();
     getToken();
+    print('initstate calisti');
   }
 
   void getToken() async {
@@ -68,15 +71,18 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void getMe(String token) async {
+    print('getMe calisti');
     final response = await UserData.getMe(token);
     setState(() {
       userInfo = response;
+      print(userInfo['user']['picture']);
       print(userInfo);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('build metoduna girdim');
     return Scaffold(
       appBar: AppBar(
           actions: <Widget>[
@@ -121,8 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               _settingModalBottomSheet(context);
                             },
                             child: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  userInfo['user']['picture'].toString()),
+                              backgroundImage: NetworkImage(userInfo['user']['picture']),
                               radius: 40.0,
                             ),
                           ),
@@ -166,6 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     );
                                     if (result) {
                                       getToken();
+                                      print('geri geldim');
                                     }
                                   },
                                   child: Text('Takipçi')),
@@ -189,6 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 10.0,),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -198,7 +205,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           Text(userInfo['user']['firstname'] +
                               " " +
                               userInfo['user']['lastname']),
-                          Text('Ege Üniversitesi Bil Müh')
                         ],
                       ),
                     ),

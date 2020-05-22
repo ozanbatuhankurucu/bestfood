@@ -144,8 +144,6 @@ class _FRequestPageState extends State<FRequestPage> {
                                               yeniMap['relationship'] =
                                                   user['relationship'];
                                               fRequests[index] = yeniMap;
-                                              print(user);
-                                              print(fRequests[index]);
                                               setState(() {});
                                               print(responseAccept);
                                             },
@@ -235,7 +233,7 @@ class _FRequestPageState extends State<FRequestPage> {
             fRequests[index]['relationship'] = null;
             print(response);
             setState(() {});
-          }, token, uid);
+          });
         });
       } else {
         print(relationship);

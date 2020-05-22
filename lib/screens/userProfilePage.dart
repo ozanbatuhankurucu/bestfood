@@ -209,7 +209,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             Navigator.pop(context);
             getUserProfileInfo();
             print(responseInfo);
-          }, token, uid);
+          });
         });
       } else {
         print(relationship);

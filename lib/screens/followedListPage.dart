@@ -102,7 +102,7 @@ class _FollowedLPageState extends State<FollowedLPage> {
                         ),
                         trailing: FlatButton(
                           onPressed: () {
-                            functions.alertRemoveFollow(context, () async {
+                            functions.alertRemoveFollowing(context, () async {
                               final response =
                                   await UserData.getRemoveFollowing(
                                       widget.token, followeds[index]['id']);

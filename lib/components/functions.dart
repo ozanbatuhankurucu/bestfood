@@ -27,7 +27,7 @@ class Functions {
       ],
     ).show();
   }
-   void alertRemoveFollow(context,Function function){
+   void alertRemoveFollowing(context,Function function){
     _onAlertButtonsPressed(context, function);
   }
 }

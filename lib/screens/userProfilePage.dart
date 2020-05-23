@@ -208,7 +208,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       if (relationship['state'] == true) {
         print(relationship);
         button = getButton('Takip ediliyor', () {
-          functions.alertRemoveFollow(context, () async {
+          functions.alertRemoveFollowing(context, () async {
             final responseInfo = await UserData.getRemoveFollowing(token, uid);
             Navigator.pop(context);
             getUserProfileInfo();

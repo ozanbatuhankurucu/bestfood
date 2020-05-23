@@ -229,7 +229,7 @@ class _FRequestPageState extends State<FRequestPage> {
       if (relationship['state'] == true) {
         print(relationship);
         button = getButton('Takip ediliyor', () {
-          functions.alertRemoveFollow(context, () async {
+          functions.alertRemoveFollowing(context, () async {
             //TODOburada yukarıdaki gibi status kontrolü yapılacak şuan api calismadigi için dümenden yaptm
             final response = await UserData.getRemoveFollowing(token, uid);
             Navigator.pop(context);

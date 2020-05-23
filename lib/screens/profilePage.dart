@@ -101,7 +101,9 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
           ],
-          title: userInfo==null ? Container() : Text(userInfo['user']['username']),
+          title: userInfo == null
+              ? Container()
+              : Text(userInfo['user']['username']),
           centerTitle: true,
           automaticallyImplyLeading: false),
       body: userInfo == null
@@ -113,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  kSizedBoxTen,
+                  kSizedBoxTwenty,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -121,19 +123,36 @@ class _ProfilePageState extends State<ProfilePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          GestureDetector(
-                            onTap: () {
-                              _settingModalBottomSheet(context);
-                            },
-                            child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(userInfo['user']['picture']),
-                              radius: 40.0,
-                            ),
+                          Stack(
+                            children: <Widget>[
+                              CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(userInfo['user']['picture']),
+                                radius: 40.0,
+                              ),
+                              Positioned(
+                                right: 0.0,
+                                bottom: 0.0,
+                                child: Container(
+                                  height: 25.0,
+                                  width: 25.0,
+                                  child: FloatingActionButton(
+                                    onPressed: () {
+                                      _settingModalBottomSheet(context);
+                                    },
+                                    backgroundColor: Colors.red,
+                                    child: Icon(
+                                      Icons.add,
+                                      size: 20.0,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ],
                       ),
-                      kSizedBoxTen,
+                      kSizedBoxFifty,
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[

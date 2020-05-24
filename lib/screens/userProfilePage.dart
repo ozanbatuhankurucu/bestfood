@@ -24,7 +24,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   getUserProfileInfo() async {
-    final response = await UserData.getProfile(widget.token, widget.uid);
+    final response = await UserData.getUserProfile(widget.token, widget.uid);
     setState(() {
       user = response;
       print(user);
@@ -88,10 +88,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
             onPressed: () {
               Navigator.pop(context, true);
             }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.message),
       ),
       body: user == null
           ? Center(

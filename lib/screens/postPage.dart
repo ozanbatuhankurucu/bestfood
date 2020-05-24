@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:thebestfoodsql/screens/createPostPage.dart';
+import 'package:thebestfoodsql/utils/tokenProvider.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class PostPage extends StatefulWidget {
   @override
@@ -7,7 +10,27 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
-  void getPost() async {}
+  String token;
+  var posts;
+  @override
+  void initState() {
+    super.initState();
+    getToken();
+    print('initstate calisti');
+  }
+
+  void getToken() async {
+    token = await Token.getToken();
+    getPostMain(token);
+  }
+
+  void getPostMain(var token) async {
+    final responsePosts = await UserData.postGetMain(token);
+    print(responsePosts);
+    setState(() {
+      posts = responsePosts;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,21 +44,33 @@ class _PostPageState extends State<PostPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreatePostPage()),
+            MaterialPageRoute(
+                builder: (context) => CreatePostPage(
+                      token: token,
+                    )),
           );
         },
         child: Image.asset('images/fork.png'),
         backgroundColor: Colors.red,
       ),
-      body: Container(),
+      body: posts == null
+          ? SpinKitCircle(
+              color: Colors.blue,
+              size: 50.0,
+            )
+          : ListView.builder(
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                return Container();
+              },
+            ),
     );
   }
 
   //refreshIndictor
   Future<Null> _handleRefresh() async {
     await new Future.delayed(new Duration(seconds: 2));
-    getPost();
-
+    getPostMain(token);
     return null;
   }
 }

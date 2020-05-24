@@ -82,7 +82,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    print('build metoduna girdim');
     return Scaffold(
       appBar: AppBar(
           actions: <Widget>[

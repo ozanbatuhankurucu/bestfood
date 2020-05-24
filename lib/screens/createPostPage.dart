@@ -7,13 +7,16 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:thebestfoodsql/components/tFFieldPost.dart';
 import 'package:thebestfoodsql/utils/constants.dart';
+import 'package:thebestfoodsql/utils/userData.dart';
 
-const kGoogleApiKey = "";
+const kGoogleApiKey = "AIzaSyDeJf-xQDxUZhLIW-ONmp2_iuUkKoDBcGk";
 
 // to get places detail (lat/lng)
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
 
 class CreatePostPage extends StatefulWidget {
+  final token;
+  CreatePostPage({this.token});
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
 }
@@ -25,11 +28,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
   final _formKey = GlobalKey<FormState>();
   final snackBar = SnackBar(content: Text('Lütfen resim yükleyiniz!'));
   String currentVenueName;
-  String directions;
-  String foodRecom;
+  String postDescription;
   String location;
   File _image;
-  String uid;
 
   Future takePhoto(context) async {
     var image = await ImagePicker.pickImage(
@@ -55,6 +56,20 @@ class _CreatePostPageState extends State<CreatePostPage> {
     if (image != null) {}
   }
 
+  void addTag() {
+    List<String> tags = [];
+    String description = "Çok güzel bir mekan. #adanakebap #salgam";
+
+    List<String> newList =
+        description.split(' ').map((String text) => text).toList();
+
+    for (String word in newList) {
+      if (word.contains('#')) {
+        tags.add(word);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,16 +87,18 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     if (_image != null) {
-                      if (currentVenueName != null) {
-                        Navigator.pop(context);
-                        print('Başarıyla post olusturuldu');
-                      } else {
-                        setState(() {
-                          print("Mekanın konumunu seçiniz!");
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text('Mekanın konumunu seçiniz!')));
-                        });
-                      }
+                      final responseImage =
+                          await UserData.postUploadImage(widget.token, _image);
+                      final responseInsertPost = await UserData.insertPost(
+                          postDescription,
+                          currentVenueName,
+                          widget.token,
+                          responseImage['file_path']);
+                      final responseGetPost =
+                          await UserData.postGetMe(widget.token);
+                      print(responseImage);
+                      print(responseInsertPost);
+                      print(responseGetPost);
                     } else {
                       setState(() {
                         print("Lütfen resim yükleyiniz!");
@@ -101,8 +118,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
           children: <Widget>[
             _image != null
                 ? Container(
-                    height: MediaQuery.of(context).size.height * (1 / 2),
-                    width: MediaQuery.of(context).size.width,
                     child: Image.file(
                       _image,
                       fit: BoxFit.fill,
@@ -122,7 +137,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       title: 'Yemek Öneriniz',
                       maxLine: 3,
                       onChangedFunction: (value) {
-                        foodRecom = value;
+                        postDescription = value;
                       },
                       function: (value) {
                         if (value.isEmpty) {
@@ -148,7 +163,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     ),
                     Container(
                       child: currentVenueName == null
-                          ? Text('')
+                          ? Container()
                           : Text(currentVenueName),
                     ),
                   ],

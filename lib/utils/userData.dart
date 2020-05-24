@@ -22,7 +22,7 @@ class UserData {
   }
 
   // get profile
-  static Future getProfile(var token, var uid) async {
+  static Future getUserProfile(var token, var uid) async {
     final response = await http.get(
       'http://bestfood.codes2.com/user/detail?id=$uid',
       headers: <String, String>{
@@ -355,16 +355,19 @@ class UserData {
 
   //POST
 // post => post/insert
-  Future<void> insertPost(
-      String description, String location, var token) async {
+  static Future insertPost(
+      String description, String location, var token, String picture) async {
     final http.Response response = await http.post(
-      'http://bestfood.codes2.com/user/post/insert',
+      'http://bestfood.codes2.com/post/insert',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token'
       },
-      body: jsonEncode(
-          <String, String>{'description': description, 'location': location}),
+      body: jsonEncode(<String, String>{
+        'description': description,
+        'location': location,
+        'picture': picture
+      }),
     );
 
     if (response.statusCode == 200) {
@@ -460,14 +463,12 @@ class UserData {
     }
   }
 
-  //TODO burada upload yerine uplaod yazilmis onu duzelttir
-  //post => post/uplaod_image?id={id}
-  static Future uploadPostImage(var token, var file, var postID) async {
+  //post => post/insert
+  static Future postUploadImage(var token, var file) async {
     Map<String, String> headers = {"Authorization": "Bearer " + token};
     var stream = new http.ByteStream(DelegatingStream.typed(file.openRead()));
     var length = await file.length();
-    var uri =
-        Uri.parse("http://bestfood.codes2.com/post/uplaod_image?id=$postID");
+    var uri = Uri.parse("http://bestfood.codes2.com/post/upload_image");
     var request = new http.MultipartRequest("POST", uri);
     var multipartFile = new http.MultipartFile('file', stream, length,
         filename: basename(file.path));
@@ -475,13 +476,14 @@ class UserData {
     request.headers.addAll(headers);
     var response = await request.send();
     if (response.statusCode == 200) {
-      return response;
+      final response1 = await response.stream.bytesToString();
+      return json.decode(response1);
     }
   }
 
   //TAGS
   //post tag/insert
-  Future<void> insertTag(String tag, String postID) async {
+  static Future<void> insertTag(String tag, String postID) async {
     final http.Response response = await http.post(
       'http://bestfood.codes2.com/user/tag/insert',
       headers: <String, String>{
@@ -514,8 +516,9 @@ class UserData {
       throw Exception('Tag araması yaparken hata meydana geldi.');
     }
   }
+
   // get => tag/get_posts?tag={tag}
-   static Future postGetPostWithTag(var token, String tag) async {
+  static Future postGetPostWithTag(var token, String tag) async {
     final response = await http.get(
       'http://bestfood.codes2.com/tag/get_posts?tag=$tag',
       headers: <String, String>{
@@ -527,7 +530,8 @@ class UserData {
       return json.decode(response.body);
     } else {
       print(response.statusCode);
-      throw Exception('İçinde o tag geçen postlar getirilirken bir hata meydana geldi!');
+      throw Exception(
+          'İçinde o tag geçen postlar getirilirken bir hata meydana geldi!');
     }
   }
 }

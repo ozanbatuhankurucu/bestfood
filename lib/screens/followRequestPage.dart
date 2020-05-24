@@ -137,16 +137,10 @@ class _FRequestPageState extends State<FRequestPage> {
                                                           widget.token,
                                                           fRequests[index]
                                                               ['id']);
-                                              final user =
-                                                  await UserData.getProfile(
-                                                      widget.token,
-                                                      fRequests[index]['id']);
-                                              var yeniMap = user['user'];
-                                              yeniMap['status'] =
-                                                  user['status'];
-                                              yeniMap['relationship'] =
-                                                  user['relationship'];
-                                              fRequests[index] = yeniMap;
+                                              fRequests[index]['relationship'] =
+                                                  responseAccept['relation'];
+                                              fRequests[index]['status'] =
+                                                  responseAccept['status'];
                                               setState(() {});
                                               print(responseAccept);
                                             },
@@ -230,12 +224,13 @@ class _FRequestPageState extends State<FRequestPage> {
         print(relationship);
         button = getButton('Takip ediliyor', () {
           functions.alertRemoveFollowing(context, () async {
-            //TODOburada yukarıdaki gibi status kontrolü yapılacak şuan api calismadigi için dümenden yaptm
             final response = await UserData.getRemoveFollowing(token, uid);
             Navigator.pop(context);
-            fRequests[index]['relationship'] = null;
-            print(response);
-            setState(() {});
+            if (response['status'] == "Ok") {
+              fRequests[index]['relationship'] = null;
+              print(response);
+              setState(() {});
+            }
           });
         });
       } else {

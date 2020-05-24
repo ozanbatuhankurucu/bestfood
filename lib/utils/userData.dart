@@ -8,7 +8,7 @@ class UserData {
   // get me
   static Future getMe(String token) async {
     final responseMe = await http.get(
-      'http://bestfood.codes2.com/me',
+      'http://bestfood.codes2.com/user/me',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -24,7 +24,7 @@ class UserData {
   // get profile
   static Future getProfile(var token, var uid) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/profile?id=$uid',
+      'http://bestfood.codes2.com/user/detail?id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -42,7 +42,7 @@ class UserData {
   // get add_follow
   static Future getAddFollow(var token, var uid) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/add_follow?id=$uid',
+      'http://bestfood.codes2.com/relation/add_follow?id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -60,7 +60,7 @@ class UserData {
   // me => get_followers with page
   static Future getFollowersMePage(var token, int pagination) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_follower?page=$pagination',
+      'http://bestfood.codes2.com/relation/get_follower?page=$pagination',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -77,7 +77,7 @@ class UserData {
   // me => get_followers
   static Future getFollowersMe(var token) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_follower',
+      'http://bestfood.codes2.com/relation/get_follower',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -94,7 +94,7 @@ class UserData {
   // me => get_following with page
   static Future getFollowingMePage(var token, int pagination) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_following?page=$pagination',
+      'http://bestfood.codes2.com/relation/get_following?page=$pagination',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -112,7 +112,7 @@ class UserData {
   // me => get_following
   static Future getFollowingMe(var token) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_following',
+      'http://bestfood.codes2.com/relation/get_following',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -129,7 +129,7 @@ class UserData {
   // user => get_follower
   static Future getFollower(var token, var uid) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_follower?id=$uid',
+      'http://bestfood.codes2.com/relation/get_follower?id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -145,7 +145,7 @@ class UserData {
   // user => get_follower with page
   static Future getFollowerPage(var token, var uid, int pagination) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_follower?page=$pagination&id=$uid',
+      'http://bestfood.codes2.com/relation/get_follower?page=$pagination&id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -162,7 +162,7 @@ class UserData {
   // user => get_following
   static Future getFollowing(var token, var uid) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_following?id=$uid',
+      'http://bestfood.codes2.com/relation/get_following?id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -179,7 +179,7 @@ class UserData {
   // user => get_following with page
   static Future getFollowingPage(var token, var uid, int pagination) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/get_following?page=$pagination&id=$uid',
+      'http://bestfood.codes2.com/relation/get_following?page=$pagination&id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -197,7 +197,7 @@ class UserData {
   //get search value
   static Future getSearchValue(String value, var token) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/search?value=$value',
+      'http://bestfood.codes2.com/user/search?value=$value',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -216,7 +216,7 @@ class UserData {
   static Future getSearchValuePage(
       String value, var token, int paginationCount) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/search?value=$value&page=$paginationCount',
+      'http://bestfood.codes2.com/user/search?value=$value&page=$paginationCount',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -234,7 +234,7 @@ class UserData {
   // get follow_request_count
   static Future getFollowRequestCount(var token) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/follow_request_count',
+      'http://bestfood.codes2.com/relation/follow_request_count',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -252,7 +252,7 @@ class UserData {
   //get follow_request_list
   static Future getFollowRequestList(var token) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/follow_request_list',
+      'http://bestfood.codes2.com/relation/follow_request_list',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -270,7 +270,7 @@ class UserData {
   //get follow_request_list page
   static Future getFollowRequestListPage(var token, int paginationCount) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/follow_request_list?page=$paginationCount',
+      'http://bestfood.codes2.com/relation/follow_request_list?page=$paginationCount',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -288,7 +288,7 @@ class UserData {
   // get remove_follow
   static Future getRemoveFollow(var token, var uid) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/remove_follow?id=$uid',
+      'http://bestfood.codes2.com/relation/remove_follow?id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -301,10 +301,11 @@ class UserData {
       throw Exception('Takipçi çıkarılamadı');
     }
   }
+
   // get remove_following
   static Future getRemoveFollowing(var token, var uid) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/remove_following?id=$uid',
+      'http://bestfood.codes2.com/relation/remove_following?id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -321,7 +322,7 @@ class UserData {
   // get accept_follow
   static Future getAcceptFollow(var token, var uid) async {
     final response = await http.get(
-      'http://bestfood.codes2.com/accept_follow?id=$uid',
+      'http://bestfood.codes2.com/relation/accept_follow?id=$uid',
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token'
@@ -335,12 +336,12 @@ class UserData {
     }
   }
 
-  // post upload_image
+  // user => upload_image
   static Future uploadProfileImage(var token, var file) async {
     Map<String, String> headers = {"Authorization": "Bearer " + token};
     var stream = new http.ByteStream(DelegatingStream.typed(file.openRead()));
     var length = await file.length();
-    var uri = Uri.parse("http://bestfood.codes2.com/upload_image");
+    var uri = Uri.parse("http://bestfood.codes2.com/user/upload_image");
     var request = new http.MultipartRequest("POST", uri);
     var multipartFile = new http.MultipartFile('file', stream, length,
         filename: basename(file.path));
@@ -349,6 +350,184 @@ class UserData {
     var response = await request.send();
     if (response.statusCode == 200) {
       return response;
+    }
+  }
+
+  //POST
+// post => post/insert
+  Future<void> insertPost(
+      String description, String location, var token) async {
+    final http.Response response = await http.post(
+      'http://bestfood.codes2.com/user/post/insert',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode(
+          <String, String>{'description': description, 'location': location}),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Post eklenirken bir sorun oluştu!');
+    }
+  }
+
+  // post => post/detail
+  static Future postDetail(var token, var postID) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/post/detail?id=$postID',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Post detail getirilemedi!');
+    }
+  }
+
+  // post => post/get_me
+  static Future postGetMe(var token) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/post/get_me',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Postlarım getirilemedi.');
+    }
+  }
+
+// post => post/get_me with page
+  static Future postGetMeWithPage(var token, int paginationCount) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/post/get_me?page=$paginationCount',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Benim postlarım sayfalarla birlikte getirilemedi.');
+    }
+  }
+
+  // post => post/get_main_page?page={page}
+  static Future postGetMainWithPage(var token, int paginationCount) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/post/get_main_page?page=$paginationCount',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Anasayfadaki postlar ek sayfa getirilemedi.');
+    }
+  }
+
+  // post => post/get_main
+  static Future postGetMain(var token) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/post/get_main_page',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Anasayfadaki postlar getirilemedi.');
+    }
+  }
+
+  //TODO burada upload yerine uplaod yazilmis onu duzelttir
+  //post => post/uplaod_image?id={id}
+  static Future uploadPostImage(var token, var file, var postID) async {
+    Map<String, String> headers = {"Authorization": "Bearer " + token};
+    var stream = new http.ByteStream(DelegatingStream.typed(file.openRead()));
+    var length = await file.length();
+    var uri =
+        Uri.parse("http://bestfood.codes2.com/post/uplaod_image?id=$postID");
+    var request = new http.MultipartRequest("POST", uri);
+    var multipartFile = new http.MultipartFile('file', stream, length,
+        filename: basename(file.path));
+    request.files.add(multipartFile);
+    request.headers.addAll(headers);
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      return response;
+    }
+  }
+
+  //TAGS
+  //post tag/insert
+  Future<void> insertTag(String tag, String postID) async {
+    final http.Response response = await http.post(
+      'http://bestfood.codes2.com/user/tag/insert',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{'id': postID, 'tag1': tag}),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Tag eklenirken bir hata olustu.');
+    }
+  }
+
+  //get => tag/search?tag={tag}
+  static Future postTagSearch(var token, String tag) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/tag/search?tag=$tag',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('Tag araması yaparken hata meydana geldi.');
+    }
+  }
+  // get => tag/get_posts?tag={tag}
+   static Future postGetPostWithTag(var token, String tag) async {
+    final response = await http.get(
+      'http://bestfood.codes2.com/tag/get_posts?tag=$tag',
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception('İçinde o tag geçen postlar getirilirken bir hata meydana geldi!');
     }
   }
 }

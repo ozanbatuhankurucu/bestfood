@@ -31,6 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> uploadPhoto(BuildContext context, var image) async {
     if (image != null) {
       final response = await UserData.uploadProfileImage(token, image);
+      print(response);
       print(response.statusCode);
       Navigator.pop(context);
       getToken();

@@ -23,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String verificationMessage;
   Future<void> fetchRegister() async {
     final http.Response response = await http.post(
-      'http://bestfood.codes2.com/register',
+      'http://bestfood.codes2.com/user/insert',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

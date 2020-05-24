@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:thebestfoodsql/screens/createPostPage.dart';
 
 class PostPage extends StatefulWidget {
   @override
@@ -7,9 +7,6 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
-  List<Map<String, dynamic>> posts = List();
-  String uid;
-
   void getPost() async {}
 
   @override
@@ -22,10 +19,10 @@ class _PostPageState extends State<PostPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          /*  Navigator.push(
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreatePostPage()),
-          ); */
+          );
         },
         child: Image.asset('images/fork.png'),
         backgroundColor: Colors.red,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:thebestfoodsql/screens/editProfilePage.dart';
 import 'package:thebestfoodsql/screens/followedListPage.dart';
 import 'package:thebestfoodsql/screens/followersListPage.dart';
 import 'package:thebestfoodsql/screens/loginPage.dart';
@@ -54,7 +55,15 @@ class _ProfilePageState extends State<ProfilePage> {
       } catch (e) {
         print(e);
       }
-    } else if (choice == "editprofile") {}
+    } else if (choice == "editprofile") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditProfilePage(
+                  userInfo: userInfo,
+                )),
+      );
+    }
   }
 
   @override

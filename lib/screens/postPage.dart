@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thebestfoodsql/components/buildPost.dart';
 import 'package:thebestfoodsql/screens/createPostPage.dart';
 import 'package:thebestfoodsql/utils/tokenProvider.dart';
 import 'package:thebestfoodsql/utils/userData.dart';
@@ -11,12 +12,11 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
   String token;
-  var posts;
+  var posts = [];
   @override
   void initState() {
     super.initState();
-    getToken();
-    print('initstate calisti');
+    //getToken();
   }
 
   void getToken() async {
@@ -50,7 +50,7 @@ class _PostPageState extends State<PostPage> {
                     )),
           );
         },
-        child: Image.asset('images/fork.png'),
+        child: Image.asset('assets/images/fork.png'),
         backgroundColor: Colors.red,
       ),
       body: posts == null
@@ -58,11 +58,13 @@ class _PostPageState extends State<PostPage> {
               color: Colors.blue,
               size: 50.0,
             )
-          : ListView.builder(
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                return Container();
-              },
+          : ListView(
+              children: <Widget>[
+                BuildPost(
+                  index: 0,
+                ),
+                BuildPost(index: 1)
+              ],
             ),
     );
   }

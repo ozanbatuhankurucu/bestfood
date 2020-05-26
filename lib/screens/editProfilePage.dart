@@ -1,24 +1,41 @@
 import 'package:flutter/material.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final token;
+  final userInfo;
 
-  EditProfilePage({this.token});
+  EditProfilePage({this.userInfo});
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController bioController;
+  TextEditingController firstNameController;
+  TextEditingController lastNameController;
+  TextEditingController descriptionController;
   TextEditingController userNameController;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    bioController = TextEditingController();
+    print(widget.userInfo);
+    descriptionController = TextEditingController();
     userNameController = TextEditingController();
+    firstNameController = TextEditingController();
+    lastNameController = TextEditingController();
+    descriptionController.text = widget.userInfo['user']['description'];
+    firstNameController.text = widget.userInfo['user']['firstname'];
+    lastNameController.text = widget.userInfo['user']['lastname'];
+    userNameController.text = widget.userInfo['user']['username'];
+  }
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    userNameController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -56,45 +73,73 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('Kullanıcı adı',
-                    style: TextStyle(
-                      color: Color(0xFF595B5F),
-                      fontWeight: FontWeight.w700,
-                    )),
-                TextFormField(
-                  controller: userNameController,
-                  maxLength: 25,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return "Lütfen bu alanı boş bırakmayınız!";
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-                Text('Bio',
-                    style: TextStyle(
-                      color: Color(0xFF595B5F),
-                      fontWeight: FontWeight.w700,
-                    )),
-                TextFormField(
-                  controller: bioController,
-                  keyboardType: TextInputType.multiline,
+                PEditWidget(
                   maxLines: 3,
-                  maxLength: 200,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return "Lütfen bu alanı boş bırakmayınız!";
-                    } else {
-                      return null;
-                    }
-                  },
+                  maxSize: 200,
+                  textInputType: TextInputType.multiline,
+                  userNameController: descriptionController,
+                  widgetText: "Bio",
+                ),
+                PEditWidget(
+                  maxSize: 50,
+                  userNameController: firstNameController,
+                  widgetText: "İsim",
+                ),
+                PEditWidget(
+                  maxSize: 50,
+                  userNameController: lastNameController,
+                  widgetText: "Soyisim",
+                ),
+                PEditWidget(
+                  userNameController: userNameController,
+                  widgetText: "Kullanıcı Adı",
+                  maxSize: 25,
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class PEditWidget extends StatelessWidget {
+  final TextEditingController userNameController;
+  final String widgetText;
+  final int maxSize;
+  final int maxLines;
+  final TextInputType textInputType;
+  PEditWidget(
+      {this.userNameController,
+      this.widgetText,
+      this.maxSize,
+      this.maxLines,
+      this.textInputType});
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(widgetText,
+            style: TextStyle(
+              color: Color(0xFF595B5F),
+              fontWeight: FontWeight.w700,
+            )),
+        TextFormField(
+          controller: userNameController,
+          maxLines: maxLines,
+          maxLength: maxSize,
+          keyboardType: textInputType,
+          validator: (value) {
+            if (value.isEmpty) {
+              return "Lütfen bu alanı boş bırakmayınız!";
+            } else {
+              return null;
+            }
+          },
+        ),
+      ],
     );
   }
 }

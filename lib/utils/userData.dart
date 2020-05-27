@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:path/path.dart';
@@ -337,7 +339,7 @@ class UserData {
   }
 
   // user => upload_image
-  static Future uploadProfileImage(var token, var file) async {
+  static Future uploadProfileImage(var token, File file) async {
     Map<String, String> headers = {"Authorization": "Bearer " + token};
     var stream = new http.ByteStream(DelegatingStream.typed(file.openRead()));
     var length = await file.length();
@@ -464,7 +466,7 @@ class UserData {
   }
 
   //post => post/insert
-  static Future postUploadImage(var token, var file) async {
+  static Future postUploadImage(var token, File file) async {
     Map<String, String> headers = {"Authorization": "Bearer " + token};
     var stream = new http.ByteStream(DelegatingStream.typed(file.openRead()));
     var length = await file.length();

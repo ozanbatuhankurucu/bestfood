@@ -8,6 +8,7 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:thebestfoodsql/components/tFFieldPost.dart';
 import 'package:thebestfoodsql/utils/constants.dart';
 import 'package:thebestfoodsql/utils/userData.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 const kGoogleApiKey = "AIzaSyDeJf-xQDxUZhLIW-ONmp2_iuUkKoDBcGk";
 
@@ -31,29 +32,53 @@ class _CreatePostPageState extends State<CreatePostPage> {
   String postDescription;
   String location;
   File _image;
+  Future<File> cropImage(File image) async {
+    File croppedFile = await ImageCropper.cropImage(
+      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+      sourcePath: image.path,
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+    return croppedFile;
+  }
 
   Future takePhoto(context) async {
-    var image = await ImagePicker.pickImage(
+    File image = await ImagePicker.pickImage(
         source: ImageSource.gallery, imageQuality: 45);
+    File croppedFile = await cropImage(image);
     setState(() {
-      _image = image;
+      _image = croppedFile;
       print('Image Path $_image');
     });
-    uploadPhoto(context, image);
   }
 
   Future pickCamera(context) async {
-    var image = await ImagePicker.pickImage(
+    File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 45);
+    File croppedFile = await cropImage(image);
     setState(() {
-      _image = image;
+      _image = croppedFile;
       print('Image Path $_image');
     });
-    uploadPhoto(context, image);
   }
 
-  Future uploadPhoto(BuildContext context, var image) async {
-    if (image != null) {}
+  Future uploadPhoto(BuildContext context) async {
+    if (_image != null) {
+      final responseImage =
+          await UserData.postUploadImage(widget.token, _image);
+      final responseInsertPost = await UserData.insertPost(postDescription,
+          currentVenueName, widget.token, responseImage['file_path']);
+      final responseGetPost = await UserData.postGetMe(widget.token);
+      print(responseImage);
+      print(responseInsertPost);
+      print(responseGetPost);
+    } else {
+      setState(() {
+        print("Lütfen resim yükleyiniz!");
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('Lütfen resim yükleyiniz!')));
+      });
+    }
   }
 
   void addTag() {
@@ -86,26 +111,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
             builder: (context) => IconButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
-                    if (_image != null) {
-                      final responseImage =
-                          await UserData.postUploadImage(widget.token, _image);
-                      final responseInsertPost = await UserData.insertPost(
-                          postDescription,
-                          currentVenueName,
-                          widget.token,
-                          responseImage['file_path']);
-                      final responseGetPost =
-                          await UserData.postGetMe(widget.token);
-                      print(responseImage);
-                      print(responseInsertPost);
-                      print(responseGetPost);
-                    } else {
-                      setState(() {
-                        print("Lütfen resim yükleyiniz!");
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text('Lütfen resim yükleyiniz!')));
-                      });
-                    }
+                    uploadPhoto(context);
                   }
                 },
                 icon: Icon(Icons.check)),
@@ -116,6 +122,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            SizedBox(height: 10.0),
             _image != null
                 ? Container(
                     child: Image.file(

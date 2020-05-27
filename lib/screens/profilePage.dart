@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:thebestfoodsql/screens/editProfilePage.dart';
@@ -8,6 +9,7 @@ import 'package:thebestfoodsql/utils/constants.dart';
 import 'package:thebestfoodsql/utils/tokenProvider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:thebestfoodsql/utils/userData.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -18,18 +20,34 @@ class _ProfilePageState extends State<ProfilePage> {
   var userInfo;
   String token;
   Future takePhoto(context) async {
-    var image = await ImagePicker.pickImage(
+    File image = await ImagePicker.pickImage(
         source: ImageSource.gallery, imageQuality: 45);
-    uploadPhoto(context, image);
+    if (image != null) {
+      File croppedFile = await cropImage(image);
+      uploadPhoto(context, croppedFile);
+    }
   }
 
   Future pickCamera(context) async {
-    var image = await ImagePicker.pickImage(
+    File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 45);
-    uploadPhoto(context, image);
+    if (image != null) {
+      File croppedFile = await cropImage(image);
+      uploadPhoto(context, croppedFile);
+    }
   }
 
-  Future<void> uploadPhoto(BuildContext context, var image) async {
+  Future<File> cropImage(File image) async {
+    File croppedFile = await ImageCropper.cropImage(
+      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+      sourcePath: image.path,
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+    return croppedFile;
+  }
+
+  Future<void> uploadPhoto(BuildContext context, File image) async {
     if (image != null) {
       final response = await UserData.uploadProfileImage(token, image);
       print(response);
@@ -68,10 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getToken();
-    print('initstate calisti');
   }
 
   void getToken() async {
@@ -80,7 +96,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void getMe(String token) async {
-    print('getMe calisti');
     final response = await UserData.getMe(token);
     setState(() {
       userInfo = response;

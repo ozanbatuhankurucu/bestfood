@@ -60,7 +60,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             },
             icon: Icon(
               Icons.check,
-              color: Color(0xFF639a67),
             ),
           )
         ],

@@ -16,7 +16,7 @@ class _PostPageState extends State<PostPage> {
   @override
   void initState() {
     super.initState();
-    //getToken();
+    getToken();
   }
 
   void getToken() async {
@@ -28,7 +28,7 @@ class _PostPageState extends State<PostPage> {
     final responsePosts = await UserData.postGetMain(token);
     print(responsePosts);
     setState(() {
-      posts = responsePosts;
+     // posts = responsePosts;
     });
   }
 
